@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Face Recognition & Deepfake Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <img src="{{ url_for('static', filename='FEI.png') }}" alt="University Logo" class="logo">
+        <h1>Face Recognition & Deepfake Detection</h1>
+    </div>
+    <div class="container">
+
+        <form method="POST" action="/" enctype="multipart/form-data">
+            <label>Select a video to analyze:</label><br><br>
+            <input type="file" name="video" accept="video/*" required><br><br>
+            <button type="submit">Analyze and display single video</button>
+        </form>
+
+        {% if result %}
+        <h2>Result: {{ result }}</h2>
+        {% endif %}
+
+        <hr>
+
+        <form action="/batch_test" method="GET">
+            <button type="submit">Analyze multiple videos with CSV output</button>
+        </form>
+
+        <hr>
+
+        <form method="POST" action="/webcam">
+            <button type="submit">🎥 Analyze from Webcam</button>
+        </form>
+
+        {% if result_cam %}
+        <h2>Result: {{ result_cam }}</h2>
+        {% endif %}
+
+        <hr>
+
+        <form action="/enroll">
+            <button type="submit">➕ Enroll New Face</button>
+        </form>    
+    </div>
+    <div>
+        <div class="footer">
+            <div class="description">
+                <p><strong>Ivan Usachev – Master’s Thesis Project:</strong> As part of this master’s thesis, a modular web-based application was developed for automated face recognition and deepfake detection in video streams. The system integrates two state-of-the-art deep learning models: <strong>InsightFace</strong> for face identification and <strong>Vision Transformer (ViT)</strong> for detecting manipulated facial content. The face recognition module leverages the InsightFace framework with ArcFace loss and a compact backbone, enabling fast and accurate recognition of both known and unknown individuals in various conditions. The deepfake detection component uses a fine-tuned Vision Transformer. The model was trained and evaluated on benchmark datasets such as <em>FaceForensics++</em> for robust performance. The application is implemented in Flask with a user-friendly browser interface. Users can upload videos, test webcam streams, or perform batch analyses. Real-time feedback is provided for each analyzed identity. Additionally, the system supports enrollment of new identities, deletion of saved embeddings, and GPU-accelerated batch processing.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

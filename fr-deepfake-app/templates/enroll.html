@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enroll New Faces</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>➕ Enroll New Faces</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            <label>Select multiple video/image files to enroll:</label><br><br>
+            <input type="file" name="files" multiple accept="video/*,image/*" required><br><br>
+            <button type="submit">Enroll</button>
+        </form>
+
+        <hr>
+
+        <form method="POST">
+            <input type="hidden" name="delete" value="true">
+            <button type="submit" style="background-color: crimson; color: white;">🗑️ Delete Saved Embeddings</button>
+        </form>
+
+        {% if message %}
+            <hr>
+            <p>{{ message }}</p>
+        {% endif %}
+
+        <hr>
+        <form action="/">
+            <button type="submit">Back to Home</button>
+        </form>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Batch Test Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Batch Test Completed</h1>
+
+        <p>Your results have been saved and are available for download:</p>
+        <p><strong>Saved to:</strong><br><code>{{ file_path }}</code></p>
+
+        <form action="/{{ download_link }}">
+            <button type="submit">📥 Download CSV</button>
+        </form>
+
+        <hr>
+
+        <form action="/">
+            <button type="submit">Back to Home</button>
+        </form>
+    </div>
+</body>
+</html>
