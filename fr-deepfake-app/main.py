@@ -142,7 +142,10 @@ def process_video(video_path, dfd_threshold=0.2, face_threshold=0.4, fake_thresh
                 cv.putText(frame, label, (x1, y1 - 10), cv.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
         
         if display:
+            height, width, _ = frame.shape
+
             cv.putText(frame, f'Playing: {video_filename}', (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            cv.putText(frame, f'Press "Q" to end process and close window', (10, height - 20), cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
             cv.imshow('Face Recognition', frame)
             if cv.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -271,7 +274,6 @@ def enroll():
                 known_embeddings = embeddings
                 known_labels = Y
 
-                import shutil
                 shutil.rmtree(temp_dir)
 
                 count = len(uploaded_files)
