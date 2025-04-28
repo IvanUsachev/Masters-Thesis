@@ -11,9 +11,9 @@
         <p>Your results have been saved and are available for download:</p>
         <p><strong>Saved to:</strong><br><code>{{ file_path }}</code></p>
 
-        <form action="/{{ download_link }}">
-            <button type="submit">📥 Download CSV</button>
-        </form>
+        <a href="{{ url_for('download_file', filename='batch_results.csv') }}" class="button">
+            📥 Download CSV
+        </a>
 
         <hr>
 

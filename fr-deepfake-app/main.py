@@ -13,6 +13,7 @@ import csv
 from datetime import datetime
 from faceloading import FACELOADING
 from flask import send_file
+from flask import send_from_directory
 import tempfile
 import shutil
 
@@ -76,6 +77,7 @@ def process_video(video_path, dfd_threshold=0.2, face_threshold=0.4, fake_thresh
     known_frames = 0
     unknown_frames = 0
     deepfake_results = []
+    recognized_labels = []
 
     def deepfake_worker(frame, frame_number):
         img_rgb = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
@@ -115,9 +117,10 @@ def process_video(video_path, dfd_threshold=0.2, face_threshold=0.4, fake_thresh
                 unknown_frames += 1
             else:
                 known_frames += 1
+                recognized_labels.append(label)
             
             # Perform deepfake detection on one frame per second
-            if detect_deepfake and total_frames % frame_interval == 0 and label != 'Unknown':
+            if detect_deepfake and total_frames % frame_interval == 0:
                 #and label != 'Unknown'
                 deepfake_thread = threading.Thread(target=deepfake_worker, args=(frame, total_frames))
                 deepfake_thread.start()
@@ -146,10 +149,15 @@ def process_video(video_path, dfd_threshold=0.2, face_threshold=0.4, fake_thresh
 
     cap.release()
     if display:
-        cv.destroyAllWindows()
-    
-    face_prediction = "Known" if known_frames >= unknown_frames else "Unknown"
-    
+        cv.destroyAllWindows()   
+
+    if recognized_labels:
+        from collections import Counter
+        most_common_label, _ = Counter(recognized_labels).most_common(1)[0]
+        face_prediction = most_common_label
+    else:
+        face_prediction = "Unknown"
+
     # Determine deepfake prediction if detection is enabled
     video_prediction = face_prediction  
     if detect_deepfake and deepfake_results:
@@ -162,14 +170,11 @@ def process_video(video_path, dfd_threshold=0.2, face_threshold=0.4, fake_thresh
         else:
             video_prediction = "Real"
     
-    #final_prediction = face_prediction
-    #final_prediction = video_prediction
+    final_identity = face_prediction
+    final_video_status = video_prediction
 
-    # Prioritize face recognition if no known face is found
-    final_prediction = face_prediction if face_prediction == "Unknown" else video_prediction
-    print(f"The video '{video_filename}' is classified as '{final_prediction}'")
-    
-    return final_prediction
+    print(f"The video '{video_filename}': Identity = {final_identity}, Video = {final_video_status}")
+    return final_identity, final_video_status
 
 # ----- Flask Routes -----
 @app.route("/", methods=["GET", "POST"])
@@ -225,6 +230,10 @@ def batch_test():
         return render_template("batch_result.html", download_link=web_path, file_path=os.path.abspath(final_path))
 
     return render_template("batch_test.html")
+
+@app.route('/download/<path:filename>')
+def download_file(filename):
+    return send_from_directory('results', filename, as_attachment=True)
 
 @app.route("/enroll", methods=["GET", "POST"])
 def enroll():
